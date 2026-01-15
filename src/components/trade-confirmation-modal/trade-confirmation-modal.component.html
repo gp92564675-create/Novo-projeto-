@@ -1,0 +1,66 @@
+
+<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" (click)="cancel()">
+  <div class="bg-dark-surface rounded-lg p-6 max-w-sm w-full shadow-2xl" (click)="$event.stopPropagation()">
+    <h3 class="text-xl font-bold text-center mb-1">Confirm Trade</h3>
+    <p class="text-center text-sm text-dark-text-secondary mb-4">Account: {{ accountType() }}</p>
+
+    <div class="space-y-3 text-lg">
+      <div class="flex justify-between items-center bg-dark-bg p-3 rounded-md">
+        <span class="text-dark-text-secondary">Asset:</span>
+        <span class="font-bold">{{ signal().asset }}</span>
+      </div>
+       <div class="flex justify-between items-center bg-dark-bg p-3 rounded-md">
+        <span class="text-dark-text-secondary">Direction:</span>
+        <span class="font-bold" [class.text-brand-green]="signal().direction === 'CALL'" [class.text-brand-red]="signal().direction === 'PUT'">{{ signal().direction }}</span>
+      </div>
+       <div class="flex justify-between items-center bg-dark-bg p-3 rounded-md">
+        <span class="text-dark-text-secondary">Timeframe:</span>
+        <span class="font-bold">{{ signal().timeframe }}</span>
+      </div>
+    </div>
+
+    <div class="mt-6">
+        <label for="trade-amount-modal" class="block text-sm font-medium text-dark-text-secondary mb-1">Trade Amount ($)</label>
+        <input 
+          type="number"
+          id="trade-amount-modal"
+          [ngModel]="tradeAmount()"
+          (ngModelChange)="tradeAmount.set($event)"
+          class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-3 text-dark-text text-lg focus:outline-none focus:ring-2 focus:ring-brand-green"
+        />
+    </div>
+
+    <div class="mt-4 text-xs text-dark-text-secondary space-y-1">
+        <div class="flex justify-between">
+            <span>Current Balance:</span>
+            <span>${{ balance() | number:'1.2-2' }}</span>
+        </div>
+        <div class="flex justify-between">
+            <span>New Balance:</span>
+            <span>${{ newBalance() | number:'1.2-2' }}</span>
+        </div>
+         <div class="flex justify-between text-brand-green">
+            <span>Potential Payout:</span>
+            <span>+${{ potentialPayout() | number:'1.2-2' }}</span>
+        </div>
+    </div>
+
+    <div class="mt-6 flex space-x-2">
+      <button (click)="cancel()" class="w-1/3 bg-dark-border text-dark-text font-bold py-3 rounded-lg">Cancel</button>
+      <button 
+        (click)="confirmTrade()"
+        [disabled]="isExecuting() || tradeAmount() <= 0 || tradeAmount() > balance()"
+        class="w-2/3 font-bold py-3 rounded-lg flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+        [class.bg-brand-green]="signal().direction === 'CALL'"
+        [class.bg-brand-red]="signal().direction === 'PUT'"
+        [class.text-dark-bg]="signal().direction === 'CALL' || signal().direction === 'PUT'">
+        @if(isExecuting()) {
+          <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20V20Z" fill="currentColor" opacity="0.4"></path><path d="M12 22C17.5228 22 22 17.5228 22 12H20C20 16.4183 16.4183 20 12 20V22Z" fill="currentColor"></path></svg>
+          <span>Processing...</span>
+        } @else {
+          <span>Confirm Trade</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

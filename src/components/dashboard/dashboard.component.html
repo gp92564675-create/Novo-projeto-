@@ -1,0 +1,102 @@
+
+<div class="p-4 space-y-6">
+  <!-- Header -->
+  <header class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold">Dashboard</h1>
+      <p class="text-dark-text-secondary">Welcome back, Trader!</p>
+    </div>
+    <div class="text-right">
+      <div class="px-3 py-1 rounded-full text-xs font-semibold"
+           [class.bg-green-500/20]="accountType() === 'REAL'"
+           [class.text-green-400]="accountType() === 'REAL'"
+           [class.bg-blue-500/20]="accountType() === 'DEMO'"
+           [class.text-blue-400]="accountType() === 'DEMO'">
+        {{ accountType() }}
+      </div>
+      <p class="text-2xl font-bold mt-1">${{ balance() | number:'1.2-2' }}</p>
+    </div>
+  </header>
+
+  <!-- Broker Status -->
+  <div class="bg-dark-surface p-4 rounded-lg flex justify-between items-center">
+    @if (brokerService.isConnected()) {
+      <p class="font-medium">Connected to <span class="text-brand-blue font-bold">{{ brokerService.selectedBroker() }}</span></p>
+      <div class="flex items-center space-x-2">
+        <div class="h-3 w-3 rounded-full bg-brand-green"></div>
+        <span class="text-brand-green font-semibold">Online</span>
+      </div>
+    } @else {
+      <p class="font-medium">Broker Status</p>
+      <div class="flex items-center space-x-2">
+        <div class="h-3 w-3 rounded-full bg-brand-red"></div>
+        <span class="text-brand-red font-semibold">Offline</span>
+      </div>
+    }
+  </div>
+
+  <!-- Performance Stats -->
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-dark-surface p-4 rounded-lg text-center flex flex-col justify-center">
+      <div class="relative w-32 h-32 mx-auto">
+        <svg class="w-full h-full" viewBox="0 0 120 120">
+          <circle class="text-dark-border" stroke-width="10" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60" />
+          <circle 
+            class="text-brand-green" 
+            stroke-width="10" 
+            [style.stroke-dasharray]="getWinRateCircumference()"
+            [style.stroke-dashoffset]="getWinRateOffset()"
+            stroke-linecap="round" 
+            stroke="currentColor" 
+            fill="transparent" 
+            r="50" 
+            cx="60" 
+            cy="60"
+            style="transform: rotate(-90deg); transform-origin: 50% 50%;"
+          />
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-3xl font-bold">{{ winRate() }}<span class="text-lg">%</span></span>
+        </div>
+      </div>
+       <p class="text-dark-text-secondary mt-2">Win Rate</p>
+    </div>
+    <div class="bg-dark-surface p-4 rounded-lg flex flex-col justify-center items-center text-center">
+      <p class="text-dark-text-secondary">P/L Today</p>
+      <p class="text-3xl font-bold text-green-500 mt-2">+$350.50</p>
+      <p class="text-dark-text-secondary mt-4">Drawdown</p>
+      <p class="text-xl font-bold text-red-500">-$75.00</p>
+    </div>
+  </div>
+  
+  <!-- Call to Action -->
+  <button (click)="uiService.navigateTo('SIGNALS')" class="w-full bg-brand-green text-dark-bg font-bold py-4 rounded-lg text-lg transition-transform duration-200 hover:scale-105">
+    View Live Signals
+  </button>
+  
+  <!-- Recent History -->
+  <div>
+    <h2 class="text-xl font-semibold mb-2">Recent Trades</h2>
+    <div class="space-y-2">
+      @for(trade of recentTrades().slice(0, 3); track trade.id) {
+        <div class="bg-dark-surface p-3 rounded-lg flex justify-between items-center">
+          <div>
+            <p class="font-bold">{{ trade.asset }} - <span [class.text-green-400]="trade.direction === 'CALL'" [class.text-red-400]="trade.direction === 'PUT'">{{ trade.direction }}</span></p>
+            <p class="text-xs text-dark-text-secondary">{{ trade.entryTime | date:'medium' }}</p>
+          </div>
+          <div 
+            class="px-3 py-1 rounded-full text-sm font-semibold"
+            [class.bg-green-500/20]="trade.result === 'WIN'"
+            [class.text-green-400]="trade.result === 'WIN'"
+            [class.bg-red-500/20]="trade.result === 'LOSS'"
+            [class.text-red-400]="trade.result === 'LOSS'"
+            [class.bg-yellow-500/20]="trade.result === 'DRAW'"
+            [class.text-yellow-400]="trade.result === 'DRAW'"
+            >
+            {{ trade.result }}
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+
+<div class="h-screen w-screen bg-dark-bg text-dark-text overflow-hidden">
+  @if (isLoggedIn()) {
+    <app-main-layout></app-main-layout>
+  } @else {
+    <app-login (loginSuccess)="isLoggedIn.set(true)"></app-login>
+  }
+</div>

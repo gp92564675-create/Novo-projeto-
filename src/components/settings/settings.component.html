@@ -1,0 +1,121 @@
+
+<div class="p-4 space-y-8">
+  <h1 class="text-3xl font-bold">Settings</h1>
+
+  <!-- Broker Settings -->
+  <div class="bg-dark-surface p-4 rounded-lg">
+    <h2 class="text-xl font-semibold mb-4">Broker Connection</h2>
+    @if(isConnected()) {
+        <div class="space-y-4">
+            <p>You are connected to <span class="font-bold text-brand-blue">{{ selectedBroker() }}</span>.</p>
+            <p class="text-sm text-dark-text-secondary">All trades will be executed on this broker account.</p>
+            <button 
+                (click)="disconnectFromBroker()"
+                class="w-full bg-brand-red text-white font-bold py-3 rounded-lg">
+                Disconnect
+            </button>
+        </div>
+    } @else {
+        <form (submit)="connectToBroker()" class="space-y-4">
+          <div>
+            <label for="broker-select" class="block text-sm font-medium text-dark-text-secondary mb-1">Select Broker</label>
+            <select 
+              id="broker-select"
+              [ngModel]="selectedBroker()"
+              (ngModelChange)="selectedBroker.set($event)"
+              name="broker"
+              class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-dark-text focus:outline-none focus:ring-2 focus:ring-brand-green">
+              @for(broker of brokers; track broker) {
+                <option [value]="broker">{{ broker }}</option>
+              }
+            </select>
+          </div>
+           <div>
+              <label for="broker-user" class="block text-sm font-medium text-dark-text-secondary mb-1">Broker Username</label>
+              <input 
+                type="text"
+                id="broker-user"
+                name="broker-user"
+                [ngModel]="brokerUser()"
+                (ngModelChange)="brokerUser.set($event)"
+                class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-dark-text focus:outline-none focus:ring-2 focus:ring-brand-green"
+              />
+            </div>
+            <div>
+              <label for="broker-pass" class="block text-sm font-medium text-dark-text-secondary mb-1">Broker Password</label>
+              <input 
+                type="password"
+                id="broker-pass"
+                name="broker-pass"
+                [ngModel]="brokerPass()"
+                (ngModelChange)="brokerPass.set($event)"
+                class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-dark-text focus:outline-none focus:ring-2 focus:ring-brand-green"
+              />
+            </div>
+          <button 
+            type="submit"
+            [disabled]="isConnecting() || !brokerUser() || !brokerPass()"
+            class="w-full font-bold py-3 rounded-lg transition-colors flex items-center justify-center bg-brand-blue text-white disabled:bg-dark-border disabled:text-dark-text-secondary disabled:cursor-not-allowed">
+            @if(isConnecting()) {
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+              <span>Connecting...</span>
+            } @else {
+              <span>Connect</span>
+            }
+          </button>
+        </form>
+    }
+  </div>
+
+  <!-- Risk Management -->
+  <div class="bg-dark-surface p-4 rounded-lg">
+    <h2 class="text-xl font-semibold mb-4">Risk Management</h2>
+    <div class="space-y-4">
+      <div>
+        <label for="trade-amount" class="block text-sm font-medium text-dark-text-secondary mb-1">Default Trade Amount ($)</label>
+        <input 
+          type="number"
+          id="trade-amount"
+          [ngModel]="tradeAmount()"
+          (ngModelChange)="tradeAmount.set($event)"
+          class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-dark-text focus:outline-none focus:ring-2 focus:ring-brand-green"
+        />
+      </div>
+      <div>
+        <label for="stop-loss" class="block text-sm font-medium text-dark-text-secondary mb-1">Daily Stop Loss (% of balance)</label>
+        <input 
+          type="number"
+          id="stop-loss"
+          [ngModel]="stopLossPercentage()"
+          (ngModelChange)="stopLossPercentage.set($event)"
+          class="w-full bg-dark-bg border border-dark-border rounded-lg px-3 py-2 text-dark-text focus:outline-none focus:ring-2 focus:ring-brand-green"
+        />
+      </div>
+      <button class="w-full bg-brand-green text-dark-bg font-bold py-3 rounded-lg">Save Settings</button>
+    </div>
+  </div>
+
+  <!-- Account Settings -->
+  <div class="bg-dark-surface p-4 rounded-lg">
+    <h2 class="text-xl font-semibold mb-4">Account</h2>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <span class="text-dark-text-secondary">Account Type</span>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium" [class.text-dark-text-secondary]="accountType() !== 'DEMO'">DEMO</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [checked]="accountType() === 'REAL'" (change)="brokerService.toggleAccountType()" class="sr-only peer">
+              <div class="w-11 h-6 bg-dark-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-green"></div>
+            </label>
+            <span class="text-sm font-medium" [class.text-dark-text-secondary]="accountType() !== 'REAL'">REAL</span>
+        </div>
+      </div>
+      <button (click)="logout()" class="w-full bg-brand-red text-white font-bold py-3 rounded-lg">Logout</button>
+    </div>
+  </div>
+  
+  <div class="text-center text-xs text-dark-text-secondary pt-4">
+    <p>Gourgel AI v1.0.1</p>
+    <p class="mt-2">Disclaimer: Trading involves substantial risk and is not suitable for every investor. An investor could potentially lose all or more than the initial investment. Risk capital is money that can be lost without jeopardizing one's financial security or lifestyle.</p>
+  </div>
+</div>

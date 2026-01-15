@@ -1,0 +1,5 @@
+
+/* Ensures content area respects the fixed bottom nav bar */
+main {
+  padding-bottom: 64px; /* Adjust this value based on your nav bar height */
+}

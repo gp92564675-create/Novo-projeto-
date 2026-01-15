@@ -1,0 +1,59 @@
+
+<div class="p-4">
+  <h1 class="text-3xl font-bold mb-4">Trade History</h1>
+  
+  <div class="space-y-3">
+    @for(trade of tradeHistory(); track trade.id) {
+      <div class="bg-dark-surface rounded-lg p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-bold text-lg">{{ trade.asset }}</p>
+            <p class="text-sm" [class.text-brand-green]="trade.direction === 'CALL'" [class.text-brand-red]="trade.direction === 'PUT'">
+              {{ trade.direction }} @ ${{ trade.amount }}
+            </p>
+            <p class="text-xs text-dark-text-secondary">{{ trade.entryTime | date:'MMM d, y, h:mm:ss a' }}</p>
+          </div>
+          <div 
+            class="px-4 py-1.5 rounded-full text-md font-bold text-center"
+            [class.bg-green-500/20]="trade.result === 'WIN'"
+            [class.text-green-400]="trade.result === 'WIN'"
+            [class.bg-red-500/20]="trade.result === 'LOSS'"
+            [class.text-red-400]="trade.result === 'LOSS'"
+            [class.bg-gray-500/20]="trade.result === 'PENDING'"
+            [class.text-gray-400]="trade.result === 'PENDING'"
+            [class.bg-yellow-500/20]="trade.result === 'DRAW'"
+            [class.text-yellow-400]="trade.result === 'DRAW'"
+          >
+            {{ trade.result }}
+          </div>
+        </div>
+        @if(trade.result !== 'PENDING') {
+          <div class="mt-3 pt-3 border-t border-dark-border text-xs text-dark-text-secondary grid grid-cols-3 text-center">
+            <div>
+              <p>Entry Price</p>
+              <p class="font-mono text-dark-text">{{ trade.entryPrice | number:'1.4-4' }}</p>
+            </div>
+            <div>
+              <p>Close Price</p>
+              <p class="font-mono text-dark-text">{{ trade.closePrice | number:'1.4-4' }}</p>
+            </div>
+            <div>
+              <p>Profit/Loss</p>
+              @if(trade.result === 'WIN') {
+                <p class="font-mono text-green-400">+${{ trade.amount * 0.85 | number:'1.2-2' }}</p>
+              } @else if (trade.result === 'LOSS') {
+                <p class="font-mono text-red-400">-${{ trade.amount | number:'1.2-2' }}</p>
+              } @else {
+                <p class="font-mono text-gray-400">$0.00</p>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @empty {
+      <div class="text-center py-16 text-dark-text-secondary">
+          <p>No trade history for this account.</p>
+      </div>
+    }
+  </div>
+</div>

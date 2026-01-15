@@ -1,0 +1,41 @@
+
+<div class="flex flex-col h-screen w-screen overflow-hidden">
+  <!-- Main Content -->
+  <main class="flex-1 overflow-y-auto pb-20">
+    @switch (currentPage()) {
+      @case ('DASHBOARD') {
+        <app-dashboard></app-dashboard>
+      }
+      @case ('SIGNALS') {
+        <app-signals></app-signals>
+      }
+      @case ('CHART') {
+        <app-chart></app-chart>
+      }
+      @case ('HISTORY') {
+        <app-history></app-history>
+      }
+      @case ('SETTINGS') {
+        <app-settings></app-settings>
+      }
+    }
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-dark-surface border-t border-dark-border">
+    <div class="flex justify-around max-w-md mx-auto">
+      @for(item of navItems; track item.page) {
+        <button 
+          (click)="uiService.navigateTo(item.page)" 
+          class="flex flex-col items-center justify-center w-full pt-3 pb-2 text-dark-text-secondary transition-colors duration-200"
+          [class.text-brand-green]="currentPage() === item.page"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="item.icon" />
+          </svg>
+          <span class="text-xs mt-1">{{ item.page }}</span>
+        </button>
+      }
+    </div>
+  </nav>
+</div>
